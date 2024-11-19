@@ -37,7 +37,7 @@ To create the **user_accounts** table, follow these steps in pgAdmin:
 Open **pgAdmin** and connect to your PostgreSQL database server.
 Create a new database (if you haven't already):
 Right-click **Databases → Create → Database.**
-Enter a name for your database (e.g., bpiMsDatabase) and click **Save**.
+Enter a name for your database **bpiMsDatabase** and click **Save**.
 Create the user_accounts table:
 
 Open the Query Tool by right-clicking on your database and selecting Query Tool.
