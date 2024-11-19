@@ -11,13 +11,19 @@ const App = () => {
   const users = useSelector((state) => state.users.users);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
-  const [photo, setPhoto] = useState(null);
   const [form] = Form.useForm();
   const [imagePreview, setImagePreview] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredUsers, setFilteredUsers] = useState(users);
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [photo, setPhoto] = useState(null);
+
+  // Fetch users initially and refresh whenever `users` state changes
+  useEffect(() => {
+    dispatch(fetchUsers());
+  }, [dispatch]);
 
   useEffect(() => {
+    // Update filteredUsers whenever `users` or `searchQuery` changes
     if (searchQuery) {
       const filtered = users.filter((user) =>
         user.username.toLowerCase().includes(searchQuery.toLowerCase())
@@ -26,54 +32,48 @@ const App = () => {
     } else {
       setFilteredUsers(users);
     }
-  }, [users, searchQuery, isModalOpen]);
+  }, [users, searchQuery]);
 
-  const handleAddOrEdit = (values) => {
+  const handleAddOrEdit = async (values) => {
     values.photo = photo;
     if (editingUser) {
-      dispatch(updateUser({ id: editingUser.id, formData: values }));
+      await dispatch(updateUser({ id: editingUser.id, formData: values }));
     } else {
-      dispatch(addUser(values));
+      await dispatch(addUser(values));
     }
+
+    // Close modal and reset the form
     setIsModalOpen(false);
     form.resetFields();
-  };
 
-  useEffect(() => {
+    // Refresh users list
     dispatch(fetchUsers());
-  }, [dispatch]);
+  };
 
   const handleEdit = (user) => {
     setEditingUser(user);
-    form.setFieldsValue(user);
-    setImagePreview(user.photo ? URL.createObjectURL(user.photo) : null);
+    form.setFieldsValue({
+      username: user.username,
+      email: user.email,
+      country:user.country,
+      account_type:user.account_type,
+      name:user.name,
+      contact_number:user.contact_number
+    });
+    if (user.photo) {
+      setImagePreview(user.photo.startsWith('http') ? user.photo : null);
+    }
     setIsModalOpen(true);
   };
 
   const handleDelete = (id) => {
     dispatch(deleteUser(id));
+    dispatch(fetchUsers()); // Refresh the users list after deletion
   };
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        flexDirection: 'column',
-        minHeight: '100vh'
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          width: '100%',
-          maxWidth: '1000px',
-          marginBottom: '16px',
-        }}
-      >
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
         <Button
           type="primary"
           icon={<PlusOutlined />}
@@ -93,13 +93,11 @@ const App = () => {
           value={searchQuery}
           onSearch={setSearchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          style={{ width: '200px' }}
+          style={{ width: 200 }}
         />
       </div>
 
-      <div style={{ width: '100%', maxWidth: '1000px' }}>
-        <UserTable users={filteredUsers} onEdit={handleEdit} onDelete={handleDelete} />
-      </div>
+      <UserTable users={filteredUsers} onEdit={handleEdit} onDelete={handleDelete} />
 
       <Modal
         title={editingUser ? 'Edit User' : 'Add User'}
@@ -112,9 +110,9 @@ const App = () => {
           onSubmit={handleAddOrEdit}
           imagePreview={imagePreview}
           handlePhotoChange={(e) => {
+            setPhoto(e.target.files[0]);
             const file = e.target.files[0];
             setImagePreview(file ? URL.createObjectURL(file) : null);
-            setPhoto(e.target.files[0]);
           }}
         />
       </Modal>
