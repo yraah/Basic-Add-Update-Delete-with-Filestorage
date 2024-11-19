@@ -3,9 +3,8 @@
 This project consists of two parts: the **BPI Backend** (Node.js/Express) and the **BPI Frontend** (React). Below are the steps to set up both parts and create the necessary table in PostgreSQL.
 
 
-
 ## Backend Setup (BPI Backend)
-
+**RUN**
 cd BpiBackend
 npm install
 
@@ -14,12 +13,12 @@ The backend should now be running at http://localhost:5000.
 
 **Set up your PostgreSQL database connection in the backend. You’ll need to configure your database connection in the .env file.** 
 
-
+**RUN**
 node index.js
 
 
 ## Frontend Setup (BPI Backend)
-
+**RUN**
 cd BpiFrontend
 npm install
 npm start
