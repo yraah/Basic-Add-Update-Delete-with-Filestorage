@@ -28,7 +28,7 @@ cd BpiFrontend
 
 npm install
 
-npm start
+npm run dev
 
 
 ## Database Setup (pgAdmin)
