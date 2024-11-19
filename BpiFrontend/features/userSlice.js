@@ -3,7 +3,9 @@ import axios from 'axios';
 
 // Thunks for async actions
 export const fetchUsers = createAsyncThunk('users/fetchUsers', async () => {
-  const response = await axios.get('http://localhost:5000/api/users');
+  const response = await axios.get('http://localhost:5000/api/users', {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
   return response.data;
 });
 
@@ -25,7 +27,9 @@ export const addUser = createAsyncThunk('users/addUser', async (userData) => {
 });
 
 export const updateUser = createAsyncThunk('users/updateUser', async ({ id, formData }) => {
-  const response = await axios.put(`http://localhost:5000/api/users/${id}`, formData);
+  const response = await axios.put(`http://localhost:5000/api/users/${id}`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
   return response.data;
 });
 
